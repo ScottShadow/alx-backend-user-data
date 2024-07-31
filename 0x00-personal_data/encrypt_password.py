@@ -1,22 +1,35 @@
 #!/usr/bin/env python3
-import re
+"""
+ Hashes a password using the bcrypt algorithm.
+ Check if a given password matches a hashed password.
+"""
+import bcrypt
 
 
-def filter_datum(fields, redaction, message, separator):
-    pattern = r'=(.*)'
+def hash_password(password: str) -> bytes:
+    """
+    Hashes a password using the bcrypt algorithm.
 
-    content = message.split(separator)
-    new_content = []
-    for i in content:
-        # print(i)
-        v = i.split("=")
-        # print(v)
-        if i:
-            if v[0] in fields:
-                new_content.append(re.sub(pattern, "="+redaction, i))
-            else:
-                new_content.append(i)
-    # print(new_content)
-    res_string = separator.join(new_content)
-    # print(res_string)
-    return (res_string)
+    Args:
+        password (str): The password to be hashed.
+
+    Returns:
+        bytes: The hashed password as bytes.
+
+    """
+    salt = bcrypt.gensalt()
+    return bcrypt.hashpw(password.encode(), salt)
+
+
+def is_valid(hashed_password: bytes, password: str) -> bool:
+    """
+    Check if a given password matches a hashed password.
+
+    Args:
+        hashed_password (bytes): The hashed password to compare against.
+        password (str): The password to check.
+
+    Returns:
+        bool: True if the password matches the hashed password, False otherwise.
+    """
+    return bcrypt.checkpw(password.encode(), hashed_password)
