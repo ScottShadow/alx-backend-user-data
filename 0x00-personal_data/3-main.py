@@ -10,5 +10,6 @@ cursor = db.cursor()
 cursor.execute("SELECT COUNT(*) FROM users;")
 for row in cursor:
     print(row[0])
+    print("----")
 cursor.close()
 db.close()

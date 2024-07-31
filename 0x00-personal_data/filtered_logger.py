@@ -9,6 +9,7 @@ import os
 import re
 from typing import List
 import mysql.connector
+from mysql.connector import errorcode
 
 PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 
@@ -60,12 +61,15 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
     username = os.environ.get('PERSONAL_DATA_DB_USERNAME', "root")
     host = os.environ.get('PERSONAL_DATA_DB_HOST', 'localhost')
     db_name = os.environ.get('PERSONAL_DATA_DB_NAME')
-    conn = mysql.connector.connect(
-        host=host,
-        database=db_name,
-        user=username,
-        password=psw)
-    return conn
+    try:
+        conn = mysql.connector.connect(
+            host=host,
+            database=db_name,
+            user=username,
+            password=psw)
+        return conn
+    except mysql.connector.Error:
+        return None
 
 
 def main() -> None:
