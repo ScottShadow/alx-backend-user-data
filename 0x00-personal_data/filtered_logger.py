@@ -9,7 +9,6 @@ import os
 import re
 from typing import List
 import mysql.connector
-from mysql.connector import errorcode
 
 PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 
@@ -61,29 +60,25 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
     username = os.environ.get('PERSONAL_DATA_DB_USERNAME', "root")
     host = os.environ.get('PERSONAL_DATA_DB_HOST', 'localhost')
     db_name = os.environ.get('PERSONAL_DATA_DB_NAME')
-    try:
-        conn = mysql.connector.connect(
-            host=host,
-            database=db_name,
-            user=username,
-            password=psw)
-        return conn
-    except mysql.connector.Error:
-        return None
+    conn = mysql.connector.connect(
+        host=host,
+        database=db_name,
+        user=username,
+        password=psw)
+    return conn
 
 
 def main() -> None:
     """ Implement a main function
     """
-    logger = get_logger()
+    cursor.execute("SELECT * FROM users;")
     db = get_db()
     cursor = db.cursor()
-    cursor.execute("SELECT * FROM users;")
     for row in cursor:
         message = f"name={row[0]}; email={row[1]}; phone={row[2]}; " +\
             f"ssn={row[3]}; password={row[4]};ip={row[5]}; " +\
             f"last_login={row[6]}; user_agent={row[7]};"
-        logger.info(message)
+        print(message)
     cursor.close()
     db.close()
 
