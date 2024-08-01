@@ -3,47 +3,45 @@
 Personal data
 """
 
-
 import logging
 import os
 import re
 from typing import List
 import mysql.connector
+from mysql.connector import MySQLConnection, Error
 
 PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 
 
 def filter_datum(fields: List[str], redaction: str, message: str,
                  separator: str) -> str:
-    """ Replacing """
-    for f in fields:
-        message = re.sub(rf"{f}=(.*?)\{separator}",
-                         f'{f}={redaction}{separator}', message)
+    """Replace fields with redacted values"""
+    for field in fields:
+        message = re.sub(rf"{field}=(.*?){separator}",
+                         f'{field}={redaction}{separator}', message)
     return message
 
 
 class RedactingFormatter(logging.Formatter):
-    """ RedactingFormatter class. """
+    """RedactingFormatter class."""
 
     REDACTION = "***"
     FORMAT = "[HOLBERTON] %(name)s %(levelname)s %(asctime)-15s: %(message)s"
     SEPARATOR = ";"
 
     def __init__(self, fields: List[str]):
-        """ Init """
+        """Initialize RedactingFormatter"""
         self.fields = fields
-        super(RedactingFormatter, self).__init__(self.FORMAT)
+        super().__init__(self.FORMAT)
 
     def format(self, record: logging.LogRecord) -> str:
-        """ Format """
+        """Format log record"""
         return filter_datum(self.fields, self.REDACTION,
                             super().format(record), self.SEPARATOR)
 
 
 def get_logger() -> logging.Logger:
-    """ Implementing a logger.
-    """
-
+    """Implement a logger"""
     logger = logging.getLogger("user_data")
     logger.setLevel(logging.INFO)
     logger.propagate = False
@@ -53,33 +51,44 @@ def get_logger() -> logging.Logger:
     return logger
 
 
-def get_db() -> mysql.connector.connection.MySQLConnection:
-    """ Implement db conectivity
-    """
+def get_db() -> MySQLConnection:
+    """Implement db connectivity"""
     psw = os.environ.get("PERSONAL_DATA_DB_PASSWORD", "root")
     username = os.environ.get('PERSONAL_DATA_DB_USERNAME', "root")
     host = os.environ.get('PERSONAL_DATA_DB_HOST', 'localhost')
     db_name = os.environ.get('PERSONAL_DATA_DB_NAME', 'my_db')
-    conn = mysql.connector.connect(
-        host=host,
-        database=db_name,
-        user=username,
-        password=psw)
-    return conn
+    try:
+        conn = mysql.connector.connect(
+            host=host,
+            database=db_name,
+            user=username,
+            password=psw
+        )
+        return conn
+    except Error as err:
+        logger = get_logger()
+        logger.error("Error connecting to database: %s", err)
+        return None
 
 
 def main() -> None:
-    """ Implement a main function
-    """
-    cursor.execute("SELECT * FROM users;")
+    """Implement the main function"""
+    logger = get_logger()
     db = get_db()
-    cursor = db.cursor()
-    for row in cursor:
-        message = f"name={row[0]}; email={row[1]}; phone={row[2]}; " +\
-            f"ssn={row[3]}; password={row[4]};ip={row[5]}; " +\
-            f"last_login={row[6]}; user_agent={row[7]};"
-        print(message)
-    cursor.close()
+    if db is None:
+        logger.error("Failed to connect to database")
+        return
+
+    with db.cursor() as cursor:
+        try:
+            cursor.execute("SELECT * FROM users;")
+            for row in cursor:
+                message = (f"name={row[0]}; email={row[1]}; phone={row[2]}; "
+                           f"ssn={row[3]}; password=REDACTED; ip={row[5]}; "
+                           f"last_login={row[6]}; user_agent={row[7]};")
+                logger.info(message)
+        except Error as err:
+            logger.error("Error executing query: %s", err)
     db.close()
 
 
