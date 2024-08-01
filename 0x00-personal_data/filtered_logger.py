@@ -53,10 +53,15 @@ def get_logger() -> logging.Logger:
 
 def get_db() -> MySQLConnection:
     """Implement db connectivity"""
-    psw = os.environ.get("PERSONAL_DATA_DB_PASSWORD", "root")
-    username = os.environ.get('PERSONAL_DATA_DB_USERNAME', "root")
-    host = os.environ.get('PERSONAL_DATA_DB_HOST', 'localhost')
-    db_name = os.environ.get('PERSONAL_DATA_DB_NAME', 'my_db')
+    try:
+        psw = os.environ["PERSONAL_DATA_DB_PASSWORD"]
+        username = os.environ['PERSONAL_DATA_DB_USERNAME']
+        host = os.environ['PERSONAL_DATA_DB_HOST']
+        db_name = os.environ['PERSONAL_DATA_DB_NAME']
+    except KeyError as e:
+        # logger = get_logger()
+        # logger.error("Missing required environment variable: %s", e)
+        return None
     try:
         conn = mysql.connector.connect(
             host=host,
@@ -65,9 +70,9 @@ def get_db() -> MySQLConnection:
             password=psw
         )
         return conn
-    except Error as err:
-        logger = get_logger()
-        logger.error("Error connecting to database: %s", err)
+    except Error:
+        # logger = get_logger()
+        # logger.error("Error connecting to database: %s", err)
         return None
 
 
@@ -76,7 +81,7 @@ def main() -> None:
     logger = get_logger()
     db = get_db()
     if db is None:
-        logger.error("Failed to connect to database")
+        # logger.error("Failed to connect to database")
         return
 
     with db.cursor() as cursor:
@@ -87,8 +92,9 @@ def main() -> None:
                            f"ssn={row[3]}; password=REDACTED; ip={row[5]}; "
                            f"last_login={row[6]}; user_agent={row[7]};")
                 logger.info(message)
-        except Error as err:
-            logger.error("Error executing query: %s", err)
+        except Error:
+            # logger.error("Error executing query: %s", err)
+            pass
     db.close()
 
 
