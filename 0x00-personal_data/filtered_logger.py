@@ -58,7 +58,7 @@ def get_db() -> MySQLConnection:
         username = os.environ['PERSONAL_DATA_DB_USERNAME']
         host = os.environ['PERSONAL_DATA_DB_HOST']
         db_name = os.environ['PERSONAL_DATA_DB_NAME']
-    except KeyError as e:
+    except KeyError:
         # logger = get_logger()
         # logger.error("Missing required environment variable: %s", e)
         return None
