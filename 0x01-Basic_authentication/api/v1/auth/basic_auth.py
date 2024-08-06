@@ -55,6 +55,37 @@ class BasicAuth(Auth):
             return (res[0], res[1])
         return (None, None)
 
+    def user_object_from_credentials(self, user_email: str, user_pwd: str
+                                     ) -> TypeVar('User'):
+        """
+        Validates the user credentials and returns the corresponding User
+        object.
+
+        Args:
+            user_email (str): The email of the user.
+            user_pwd (str): The password of the user.
+
+        Returns:
+            TypeVar('User'): The User object if the credentials are valid,
+            None otherwise.
+        """
+        if user_email and not isinstance(user_email, str):
+            return None
+        if user_pwd and not isinstance(user_pwd, str):
+            return None
+        if User.count() == 0:
+            return None
+        current_user = User.search({'email': user_email})
+
+        if current_user is None or len(current_user) == 0:
+            return None
+        current_user = current_user[0]
+        if current_user.is_valid_password(user_pwd):
+            # print(f"{current_user.display_name()}+++++")
+            return current_user
+        else:
+            return None
+
     def current_user(self, request=None) -> TypeVar('User'):
         """
         overloads Auth and retrieves the User instance for a request
