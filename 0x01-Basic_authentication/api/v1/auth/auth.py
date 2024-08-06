@@ -1,67 +1,42 @@
 #!/usr/bin/env python3
 """
-Auth module
+Auth class
 """
+
+from tabnanny import check
 from flask import request
-from typing import List, TypeVar
+from typing import TypeVar, List
+User = TypeVar('User')
 
 
 class Auth:
     """
-    Class to manage the API authentication.
+    a class to manage the API authentication
     """
 
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
         """
-        Check if the given `path` is excluded from authentication based on
-        the list of `excluded_paths`.
-
-        Parameters:
-            path (str): The path to check for authentication.
-            excluded_paths (List[str]): A list of paths that are excluded
-            from authentication.
-
-        Returns:
-            bool: True if the `path` is not excluded from authentication,
-            False otherwise.
+        returns False - path and excluded_paths
         """
-        if path is None or excluded_paths is None:
+        check = path
+        if path is None or excluded_paths is None or len(excluded_paths) == 0:
             return True
-        if path in excluded_paths:
+        if path[-1] != "/":
+            check += "/"
+        if check in excluded_paths or path in excluded_paths:
             return False
-        for excluded_path in excluded_paths:
-            if path.startswith(excluded_path):
-                return False
-            if excluded_path.startswith(path):
-                return False
         return True
 
     def authorization_header(self, request=None) -> str:
         """
-        Retrieves the authorization header from the given request object.
-
-        Args:
-            request (Optional[flask.Request]): The Flask request object.
-            Defaults to None.
-
-        Returns:
-            str: The authorization header value if it exists in the request
-            headers, otherwise None.
+        returns None - request
         """
         if request is None:
             return None
-        if request.headers.get('Authorization', None) is None:
-            return None
-        return request.headers.get('Authorization', None)
+        return request.headers.get("Authorization")
 
-    def current_user(self, request=None) -> TypeVar('User'):
+    def current_user(self, request=None) -> User:
         """
-        Retrieves the current user from the given request.
-
-        Args:
-            request (Optional[Request]): The request object. Defaults to None.
-
-        Returns:
-            TypeVar('User'): The current user object.
+        returns None - request
         """
         return None
