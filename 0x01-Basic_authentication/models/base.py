@@ -123,15 +123,37 @@ class Base():
 
     @classmethod
     def search(cls, attributes: dict = {}) -> List[TypeVar('Base')]:
-        """ Search all objects with matching attributes
+        """Search for objects in the database based on the provided attributes.
+
+        Args:
+            attributes (dict): Key-value pairs indicating the attributes to search for.
+
+        Returns:
+            List[Base]: A list of objects matching the provided attributes.
         """
+
+        # Get the name of the class
         s_class = cls.__name__
+
+        # Define an inner function to perform the search
         def _search(obj):
+            """Check if the object matches the provided attributes.
+
+            Args:
+                obj (Base): The object to check.
+
+            Returns:
+                bool: True if the object matches all the attributes, False otherwise.
+            """
+            # If no attributes are provided, return True
             if len(attributes) == 0:
                 return True
+
+            # Check if the object matches all the attributes
             for k, v in attributes.items():
                 if (getattr(obj, k) != v):
                     return False
             return True
-        
+
+        # Filter the objects based on the search function and return the results
         return list(filter(_search, DATA[s_class].values()))
