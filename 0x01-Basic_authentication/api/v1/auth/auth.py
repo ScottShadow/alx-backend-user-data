@@ -4,6 +4,7 @@ Auth module
 """
 from flask import request
 from typing import List, TypeVar
+import fnmatch
 
 
 class Auth:
@@ -30,9 +31,7 @@ class Auth:
         if path in excluded_paths:
             return False
         for excluded_path in excluded_paths:
-            if path.startswith(excluded_path):
-                return False
-            if excluded_path.startswith(path):
+            if fnmatch.fnmatchcase(path, excluded_path):
                 return False
         return True
 
