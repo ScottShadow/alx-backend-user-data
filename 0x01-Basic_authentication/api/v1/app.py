@@ -27,6 +27,12 @@ if os.environ.get('AUTH_TYPE') == 'auth':
 
 @app.before_request
 def before_request() -> str:
+    """
+        This function is a before request hook that is executed before each
+        request to the Flask application.
+
+        :return: None
+    """
     if auth is None:
         return
     forbidden_paths = [
