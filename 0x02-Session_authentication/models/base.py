@@ -89,15 +89,10 @@ class Base():
         """ Save current object
         """
         s_class = self.__class__.__name__
-        print("Saving {} instance...".format(s_class))
-        print("{} instance has id: {}".format(s_class, self.id))
         self.updated_at = datetime.utcnow()
-        print("{} instance updated_at set to: {}".format(
             s_class, self.updated_at))
         DATA[s_class][self.id] = self
-        print("{} instance saved with id: {}".format(s_class, self.id))
         self.__class__.save_to_file()
-        print("{} instance saved to file.".format(s_class))
 
     def remove(self):
         """ Remove object
@@ -107,28 +102,28 @@ class Base():
             del DATA[s_class][self.id]
             self.__class__.save_to_file()
 
-    @classmethod
+    @ classmethod
     def count(cls) -> int:
         """ Count all objects
         """
         s_class = cls.__name__
         return len(DATA[s_class].keys())
 
-    @classmethod
+    @ classmethod
     def all(cls) -> Iterable[TypeVar('Base')]:
         """ Return all objects
         """
         return cls.search()
 
-    @classmethod
+    @ classmethod
     def get(cls, id: str) -> TypeVar('Base'):
         """ Return one object by ID
         """
         s_class = cls.__name__
         return DATA[s_class].get(id)
 
-    @classmethod
-    def search(cls, attributes: dict = {}) -> List[TypeVar('Base')]:
+    @ classmethod
+    def search(cls, attributes: dict={}) -> List[TypeVar('Base')]:
         """Search for objects in the database based on the provided attributes.
 
         Args:
