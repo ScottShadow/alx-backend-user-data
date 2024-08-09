@@ -41,7 +41,7 @@ def login() -> str:
             response.set_cookie(session_name, session_id)
             return response
     except Exception as e:
-        return jsonify({'error': 'error'}), 401
+        return jsonify({'error': 'Forbidden'}), 403
 
     return jsonify({})
 
