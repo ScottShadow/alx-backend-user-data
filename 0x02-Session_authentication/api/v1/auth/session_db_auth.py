@@ -13,21 +13,18 @@ class SessionDBAuth(SessionExpAuth):
     """ SessionDBAuth class that uses UserSession for session management """
 
     def __init__(self) -> None:
-        """ Initialize SessionDBAuth with session_duration from the environment """
+        """ Initialize SessionDBAuth with session_duration from
+        the environment """
         super().__init__()
 
     def create_session(self, user_id: str = None) -> str:
         """ Create a new session ID and store it in UserSession """
-        print("Creating a new session for user_id: {}".format(user_id))
         if not user_id or not isinstance(user_id, str):
-            print("Invalid user_id: {}".format(user_id))
             return None
 
         # Create session ID using the parent method
         session_id = super().create_session(user_id)
-        print("Generated session_id: {}".format(session_id))
         if session_id is None:
-            print("Failed to generate session_id")
             return None
         session_data = {
             'user_id': user_id,
@@ -36,9 +33,7 @@ class SessionDBAuth(SessionExpAuth):
         }
         # Create a new UserSession and save it
         user_session = UserSession(**session_data)
-        print("New UserSession object created: {}".format(user_session))
         user_session.save()
-        print("UserSession object saved to the database")
 
         return session_id
 
@@ -58,7 +53,8 @@ class SessionDBAuth(SessionExpAuth):
 
         # Check session expiration if applicable
         if self.session_duration > 0:
-            if (datetime.now() - user_session.created_at).total_seconds() > self.session_duration:
+            if (datetime.now() - user_session.created_at)\
+                    .total_seconds() > self.session_duration:
                 return None
 
         return user_session.user_id

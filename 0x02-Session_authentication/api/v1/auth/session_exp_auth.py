@@ -1,9 +1,13 @@
+#!/usr/bin/env python3
+"""SessionExpAuth Module"""
 import os
 from datetime import datetime, timedelta
 from api.v1.auth.session_auth import SessionAuth
 
 
 class SessionExpAuth(SessionAuth):
+    """SessionExpAuth Class"""
+
     def __init__(self):
         """Initialize the SessionExpAuth with session duration."""
         super().__init__()
@@ -14,11 +18,8 @@ class SessionExpAuth(SessionAuth):
 
     def create_session(self, user_id=None):
         """Create a session ID and store the session information."""
-        print("Creating session for user_id: {}".format(user_id))
         session_id = super().create_session(user_id)
-        print("Generated session_id: {}".format(session_id))
         if not session_id:
-            print("Failed to generate session_id")
             return None
 
         session_data = {
@@ -26,7 +27,6 @@ class SessionExpAuth(SessionAuth):
             "created_at": datetime.now()
         }
         self.user_id_by_session_id[session_id] = session_data
-        print("Session data stored: {}".format(session_data))
 
         return session_id
 
@@ -51,7 +51,8 @@ class SessionExpAuth(SessionAuth):
             return None
 
         # Check if the session has expired
-        if datetime.now() > session_created_at + timedelta(seconds=self.session_duration):
+        if datetime.now() > session_created_at + timedelta(
+                seconds=self.session_duration):
             # If the session is expired, delete it
             del self.user_id_by_session_id[session_id]
             return None
