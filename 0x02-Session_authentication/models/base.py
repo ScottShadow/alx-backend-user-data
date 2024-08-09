@@ -89,9 +89,15 @@ class Base():
         """ Save current object
         """
         s_class = self.__class__.__name__
+        print("Saving {} instance...".format(s_class))
+        print("{} instance has id: {}".format(s_class, self.id))
         self.updated_at = datetime.utcnow()
+        print("{} instance updated_at set to: {}".format(
+            s_class, self.updated_at))
         DATA[s_class][self.id] = self
+        print("{} instance saved with id: {}".format(s_class, self.id))
         self.__class__.save_to_file()
+        print("{} instance saved to file.".format(s_class))
 
     def remove(self):
         """ Remove object

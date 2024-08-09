@@ -12,6 +12,7 @@ def login() -> str:
       - 200
       - 400
     """
+    print("=== Starting login function ===")
     # from api.v1.views import index
     from models.user import User
     from flask import request, jsonify
@@ -19,30 +20,42 @@ def login() -> str:
     email = request.form.get('email')
     password = request.form.get('password')
 
+    print("Email:", email)
+    print("Password:", password)
+
     if email is None or len(email) == 0:
+        print("Email is missing")
         return jsonify({'error': 'email missing'}), 400
     if password is None or len(password) == 0:
+        print("Password is missing")
         return jsonify({'error': 'password missing'}), 400
 
-    try:
-        user = User.search({'email': email})
-        if user is None or len(user) == 0:
-            return jsonify({'error': 'no user found for this email'}), 404
-        if not user[0].is_valid_password(password):
-            return jsonify({'error': 'wrong password'}), 401
+    user = User.search({'email': email})
+    if user is None or len(user) == 0:
+        print("No user found for this email")
+        return jsonify({'error': 'no user found for this email'}), 404
+    if not user[0].is_valid_password(password):
+        print("Wrong password")
+        return jsonify({'error': 'wrong password'}), 401
 
+    try:
         from api.v1.app import auth
         from models.base import Base
         import os
         for u in user:
             session_id = auth.create_session(u.id)
+            print("Session ID:", session_id)
             session_name = os.environ.get("SESSION_NAME")
             response = jsonify(u.to_json())
             response.set_cookie(session_name, session_id)
+            print("Session ID:", session_id)
+            print("Session Name:", session_name)
             return response
-
     except Exception as e:
-        return jsonify({'error': 'wrong format'}), 400
+        print("Error:", e)
+        return jsonify({'error': 'error'}), 401
+
+    return jsonify({})
 
 
 @app_views.route('/auth_session/logout', methods=['DELETE'],
