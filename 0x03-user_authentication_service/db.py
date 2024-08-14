@@ -5,7 +5,7 @@ from typing import Union, TypeVar
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
-from user import User
+from user import User, Base
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.exc import NoResultFound
 
