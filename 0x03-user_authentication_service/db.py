@@ -35,7 +35,8 @@ class DB:
             self.__session = DBSession()
         return self.__session
 
-    def add_user(self, email: str, hashed_password: str) -> Union[TypeVar('User'), None]:
+    def add_user(self, email: str, hashed_password: str) ->\
+            Union[TypeVar('User'), None]:
         """Add a new user to the database
         """
         if not email or not hashed_password:
@@ -81,7 +82,8 @@ class DB:
             **kwargs: Keyword arguments to update the user's attributes.
 
         Raises:
-            ValueError: If the user ID is invalid or if an invalid attribute is provided.
+            ValueError: If the user ID is invalid or if an invalid attribute
+            is provided.
 
         Returns:
             None
