@@ -36,8 +36,7 @@ class DB:
             self.__session = DBSession()
         return self.__session
 
-    def add_user(self, email: str, hashed_password: Union[str, bytes]) ->\
-            Union[User, None]:
+    def add_user(self, email: str, hashed_password: str) -> Union[User, None]:
         """Add a new user to the database
         """
         if not email or not hashed_password:
