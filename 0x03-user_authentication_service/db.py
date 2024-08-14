@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """DB module
 """
-from typing import Union, TypeVar
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
-from user import User, Base
+from user import Base
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.exc import NoResultFound
+from user import User
 
 
 VALID_FIELDS = ['id', 'email', 'hashed_password', 'session_id',
