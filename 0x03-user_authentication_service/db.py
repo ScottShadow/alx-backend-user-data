@@ -41,12 +41,14 @@ class DB:
         """
         if not email or not hashed_password:
             return None
-        newUser = User(email=email,
-                       hashed_password=hashed_password)
+        if not isinstance(email, str) or not isinstance(hashed_password, str):
+            return None
+        new_user = User(email=email,
+                        hashed_password=hashed_password)
         session = self._session
-        session.add(newUser)
+        session.add(new_user)
         session.commit()
-        return newUser
+        return new_user
 
     def find_user_by(self, **kwargs) -> User:
         """
