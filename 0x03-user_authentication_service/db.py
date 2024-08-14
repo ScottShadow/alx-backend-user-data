@@ -35,14 +35,9 @@ class DB:
             self.__session = DBSession()
         return self.__session
 
-    def add_user(self, email: str, hashed_password: str) ->\
-            Union[TypeVar('User'), None]:
+    def add_user(self, email: str, hashed_password: str) -> TypeVar('User'):
         """Add a new user to the database
         """
-        if not email or not hashed_password:
-            return None
-        if not isinstance(email, str) or not isinstance(hashed_password, str):
-            return None
         new_user = User(email=email,
                         hashed_password=hashed_password)
         session = self._session
