@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """DB module
 """
-from typing import Union
+from typing import Union, TypeVar
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
@@ -9,7 +9,6 @@ from user import User
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.exc import NoResultFound
 
-from user import Base
 
 VALID_FIELDS = ['id', 'email', 'hashed_password', 'session_id',
                 'reset_token']
@@ -36,7 +35,7 @@ class DB:
             self.__session = DBSession()
         return self.__session
 
-    def add_user(self, email: str, hashed_password: str) -> Union[User, None]:
+    def add_user(self, email: str, hashed_password: str) -> Union[TypeVar('User'), None]:
         """Add a new user to the database
         """
         if not email or not hashed_password:
@@ -50,7 +49,7 @@ class DB:
         session.commit()
         return new_user
 
-    def find_user_by(self, **kwargs) -> User:
+    def find_user_by(self, **kwargs) -> TypeVar('User'):
         """
         Retrieves a user from the database based on the provided keyword
         arguments.
