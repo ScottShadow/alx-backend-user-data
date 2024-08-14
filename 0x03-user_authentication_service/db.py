@@ -35,7 +35,7 @@ class DB:
             self.__session = DBSession()
         return self.__session
 
-    def add_user(self, email: str, hashed_password: str) -> TypeVar('User'):
+    def add_user(self, email: str, hashed_password: str):
         """Add a new user to the database
         """
         new_user = User(email=email,
@@ -45,7 +45,7 @@ class DB:
         session.commit()
         return new_user
 
-    def find_user_by(self, **kwargs) -> TypeVar('User'):
+    def find_user_by(self, **kwargs):
         """
         Retrieves a user from the database based on the provided keyword
         arguments.
