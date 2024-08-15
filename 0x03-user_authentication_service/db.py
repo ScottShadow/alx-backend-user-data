@@ -2,16 +2,13 @@
 """DB module
 """
 from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
-from user import Base
+from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import InvalidRequestError
-from sqlalchemy.exc import NoResultFound
-from user import User
 
-
-VALID_FIELDS = ['id', 'email', 'hashed_password', 'session_id',
-                'reset_token']
+from user import Base, User
 
 
 class DB:
@@ -35,59 +32,32 @@ class DB:
             self.__session = DBSession()
         return self.__session
 
-    def add_user(self, email: str, hashed_password: str):
-        """Add a new user to the database
+    def add_user(self, email: str, hashed_password: str) -> User:
+        """Adds a new user to the db
         """
-        new_user = User(email=email,
-                        hashed_password=hashed_password)
-        session = self._session
-        session.add(new_user)
-        session.commit()
-        return new_user
+        user = User(email=email, hashed_password=hashed_password)
+        self._session.add(user)
+        self._session.commit()
+        return user
 
-    def find_user_by(self, **kwargs):
+    def find_user_by(self, **kwargs) -> User:
+        """Find the first user that matches the given filter arguments
         """
-        Retrieves a user from the database based on the provided keyword
-        arguments.
-
-        Args:
-            **kwargs: Keyword arguments to filter the user by.
-
-        Returns:
-            User
-        """
-        if not kwargs or any(field not in VALID_FIELDS for field in kwargs):
-            raise InvalidRequestError
-        session = self._session
         try:
-            resFound = session.query(User).filter_by(**kwargs).first()
-
-            if not resFound:
-                raise NoResultFound
-            return resFound
-        except Exception:
-            raise NoResultFound
+            user = self._session.query(User).filter_by(**kwargs).one()
+            return user
+        except NoResultFound:
+            raise
+        except InvalidRequestError:
+            raise
 
     def update_user(self, user_id: int, **kwargs) -> None:
+        """Update the user with the given ID with the given attributes
         """
-        Updates a user's information in the database.
-
-        Args:
-            user_id (int): The ID of the user to update.
-            **kwargs: Keyword arguments to update the user's attributes.
-
-        Raises:
-            ValueError: If the user ID is invalid or if an invalid attribute
-            is provided.
-
-        Returns:
-            None
-        """
-        updateMe = self.find_user_by(id=user_id)
-        if not updateMe:
-            raise ValueError
-        for key, value in kwargs.items():
-            if key not in VALID_FIELDS:
-                raise ValueError
-            setattr(updateMe, key, value)
+        user: User = self.find_user_by(id=user_id)
+        for key in kwargs:
+            if hasattr(user, key):
+                setattr(user, key, kwargs[key])
+            else:
+                raise ValueError()
         self._session.commit()
