@@ -2,11 +2,11 @@
 """ User authentication service"""
 from flask import Flask, jsonify, request, Response, abort, redirect
 from auth import Auth
-from sqlalchemy.orm.exc import NoResultFound
+from user import User
 
-AUTH = Auth()
 
 app = Flask(__name__)
+AUTH = Auth()
 
 
 @app.route('/', methods=['GET'], strict_slashes=False)
@@ -76,16 +76,13 @@ def login() -> str:
     password = request.form.get('password')
 
     try:
-        if AUTH.valid_login(email, password):
-            user = AUTH.login_user(email, password)
-            session_id = AUTH.create_session(user.email)
-            session_id_str = str(session_id)
-            response = jsonify({"email": user.email, "message": "logged in"})
-            response.set_cookie("session_id", session_id_str)
-            return response
-
-        else:
+        if not AUTH.valid_login(email, password):
             abort(401)
+        session_id = AUTH.create_session(email)
+        # session_id_str = str(session_id)
+        response = jsonify({"email": email, "message": "logged in"})
+        response.set_cookie("session_id", session_id)
+        return response
 
     except ValueError:
         abort(401)
@@ -179,12 +176,12 @@ def reset_password_token() -> str:
         email = request.form.get('email')
         reset_token = AUTH.get_reset_password_token(email)
         return jsonify({"email": email, "reset_token": reset_token}), 200
-    except (NoResultFound, ValueError):
+    except ValueError:
         abort(403)
 
 
 @app.route('/reset_password', methods=['PUT'], strict_slashes=False)
-def update_password() -> Response:
+def update_password() -> str:
     """
     Handles the PUT request to the '/reset_password' route for updating a
     user's password.
