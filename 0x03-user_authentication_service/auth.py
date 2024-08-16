@@ -179,7 +179,8 @@ class Auth:
             token for.
 
         Returns:
-            str: A reset password token if the user is found, otherwise raises a ValueError.
+            str: A reset password token if the user is found, otherwise raises
+            a ValueError.
 
         Raises:
             ValueError: If the user is not found or an error occurs while
