@@ -2,7 +2,7 @@
 """ User authentication service"""
 from flask import Flask, jsonify, request, Response, abort, redirect
 from auth import Auth
-from sqlalchemy.exc import NoResultFound
+from sqlalchemy.orm.exc import NoResultFound
 
 AUTH = Auth()
 
