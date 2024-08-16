@@ -45,7 +45,7 @@ class DB:
         session.commit()
         return new_user
 
-    def find_user_by(self, **kwargs):
+    def find_user_by(self, **kwargs) -> User:
         """
         Retrieves a user from the database based on the provided keyword
         arguments.
@@ -65,8 +65,8 @@ class DB:
             if not resFound:
                 raise NoResultFound
             return resFound
-        except Exception:
-            raise NoResultFound
+        except (NoResultFound, InvalidRequestError):
+            raise
 
     def update_user(self, user_id: int, **kwargs) -> None:
         """
