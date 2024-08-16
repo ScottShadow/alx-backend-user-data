@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """ User authentication service"""
-from flask import Flask, jsonify, request, Response, abort, redirect
+from flask import Flask, jsonify, request, abort, redirect
 from auth import Auth
 
 
