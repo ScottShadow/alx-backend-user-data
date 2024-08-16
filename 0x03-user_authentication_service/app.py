@@ -9,7 +9,7 @@ AUTH = Auth()
 app = Flask(__name__)
 
 
-@app.route('/', strict_slashes=False)
+@app.route('/', methods=['GET'], strict_slashes=False)
 def index() -> str:
     """
     Defines the root route of the Flask application.
@@ -22,7 +22,7 @@ def index() -> str:
 
 
 @app.route('/users', methods=['POST'], strict_slashes=False)
-def register_user() -> tuple[Response, int]:
+def register_user() -> str:
     """
     Registers a new user with the provided email and password.
 
@@ -48,7 +48,7 @@ def register_user() -> tuple[Response, int]:
 
 
 @app.route('/sessions', methods=['POST'], strict_slashes=False)
-def login():
+def login() -> str:
     """
     Handles the POST request to the '/sessions' route for user login.
 
@@ -92,7 +92,7 @@ def login():
 
 
 @app.route('/sessions', methods=['DELETE'], strict_slashes=False)
-def logout():
+def logout() -> str:
     """
     Handles the DELETE request to the '/sessions' route for user logout.
 
@@ -124,7 +124,7 @@ def logout():
 
 
 @app.route('/profile', methods=['GET'], strict_slashes=False)
-def profile():
+def profile() -> str:
     """
     Retrieves the user's email from the session ID stored in a cookie.
 
@@ -157,7 +157,7 @@ def profile():
 
 
 @app.route('/reset_password', methods=['POST'], strict_slashes=False)
-def reset_password_token():
+def reset_password_token() -> str:
     """
     Handles the POST request to the '/reset_password' route for generating a
     reset password token.
@@ -184,7 +184,7 @@ def reset_password_token():
 
 
 @app.route('/reset_password', methods=['PUT'], strict_slashes=False)
-def update_password():
+def update_password() -> str:
     """
     Handles the PUT request to the '/reset_password' route for updating a
     user's password.
